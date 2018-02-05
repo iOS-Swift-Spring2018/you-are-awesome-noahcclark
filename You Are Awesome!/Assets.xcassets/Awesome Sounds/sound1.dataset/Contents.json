@@ -6,7 +6,8 @@
   "data" : [
     {
       "idiom" : "universal",
-      "filename" : "sound1.mp3"
+      "filename" : "sound1.mp3",
+      "universal-type-identifier" : "public.mp3"
     }
   ]
 }

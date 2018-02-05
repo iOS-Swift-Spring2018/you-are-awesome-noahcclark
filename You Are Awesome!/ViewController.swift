@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var awesomeImage: UIImageView!
+    @IBOutlet weak var soundSwitch: UISwitch!
     
     var awesomePlayer = AVAudioPlayer()
     let message1 = "You are awesome!"
@@ -24,19 +25,21 @@ class ViewController: UIViewController {
     var soundNumber = -1
     let numberOfSounds = 3
     
+    //MARK: - Functions
+    
     //Code below executes when app's view first loads
     override func viewDidLoad() {
         super.viewDidLoad()
         print("The View Loaded")
     }
     
-    func playSound(soundName: String) {
+    func playSound(soundName: String, audioPlayer: inout AVAudioPlayer) {
         //try it
         if let sound = NSDataAsset(name: soundName) {
             //check if sound
             do {
-                try awesomePlayer = AVAudioPlayer(data: sound.data)
-                awesomePlayer.play()
+                try audioPlayer = AVAudioPlayer(data: sound.data)
+                audioPlayer.play()
             } catch {
                 //if sound.data is not a valid audio file
                 print("ERROR: data in \(soundName) couldn't be played as a sound.")
@@ -55,31 +58,7 @@ class ViewController: UIViewController {
         return newIndex
     }
     
-    @IBAction func showMessagePressed(_ sender: UIButton) {
-        print("*** Show Message Pressed")
-        messageLabel.text = message1
-        messageLabel.textColor = UIColor.red
-        messageLabel.textAlignment = NSTextAlignment.left
-    }
-    
-    @IBAction func showAnotherMessagePressed(_ sender: UIButton) {
-        print("*** Show Another Message Pressed")
-        messageLabel.text = message2
-        messageLabel.textColor = UIColor.blue
-        messageLabel.textAlignment = NSTextAlignment.right
-    }
-    
-    @IBAction func changeMessagePressed(_ sender: UIButton) {
-        
-        if messageLabel.text == message1 {
-            messageLabel.text = message2
-            messageLabel.textAlignment = NSTextAlignment.center
-        }
-        else {
-            messageLabel.text = message1
-            messageLabel.textAlignment = NSTextAlignment.center
-        }
-    }
+    //MARK: - Actions
     
     @IBAction func cycleMessagesPressed(_ sender: UIButton) {
         //messages
@@ -91,12 +70,7 @@ class ViewController: UIViewController {
         
         messageLabel.textAlignment = NSTextAlignment.center
         messageLabel.textColor = UIColor.green
-        
-//        var randomIndex = Int(arc4random_uniform(UInt32(messages.count)))
-//        var newIndex = -1
-//        repeat {
-//            newIndex = Int(arc4random_uniform(UInt32(messages.count)))
-//        } while index == newIndex
+
         
         //show message
         index = nonRepeatingRandom(lastNumber: index, maxValue: messages.count)
@@ -104,32 +78,28 @@ class ViewController: UIViewController {
         
         //show image
         awesomeImage.isHidden = false
-//        repeat {
-//            newIndex = Int(arc4random_uniform(UInt32(numberOfImages)))
-//        } while imageNumber == newIndex
-//        imageNumber = newIndex
         imageNumber = nonRepeatingRandom(lastNumber: imageNumber, maxValue: numberOfImages)
         awesomeImage.image = UIImage(named: "image\(imageNumber)")
         
-        //play sound
-//        repeat {
-//            newIndex = Int(arc4random_uniform(UInt32(numberOfSounds)))
-//        } while soundNumber == newIndex
-//        soundNumber = newIndex
-        soundNumber = nonRepeatingRandom(lastNumber: soundNumber, maxValue: numberOfSounds)
-        let soundName = "sound\(soundNumber)"
-        playSound(soundName: soundName)
         
-//        messageLabel.text = messages[index]
-//
-//        index += 1
-//        if index == messages.count {
-//            index = 0
-//        }
+        //play sound
+        if soundSwitch.isOn {
+            soundNumber = nonRepeatingRandom(lastNumber: soundNumber, maxValue: numberOfSounds)
+            let soundName = "sound\(soundNumber)"
+            playSound(soundName: soundName, audioPlayer: &awesomePlayer)
+        }
         
 
         
     }
+    
+    @IBAction func soundSwitchPressed(_ sender: UISwitch) {
+        if !soundSwitch.isOn && soundNumber != -1 {
+            awesomePlayer.stop()
+        }
+    }
+    
+    
     
 }
 
